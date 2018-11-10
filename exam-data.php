@@ -25,7 +25,7 @@ class ExamData {
       INNER JOIN {$wpdb->posts} pp  ON pp.ID = qq.quiz_id
       WHERE qq.quiz_id = %d
       AND p.post_status = %s
-      ORDER BY question_order, quiz_question_id ASC
+      ORDER BY rand()
       ",$quiz_id, 'publish' );
 
     $results = $wpdb->get_results( $query );
@@ -34,7 +34,9 @@ class ExamData {
   public static function get_question_answers($question_id) {
     global $wpdb;
     $sql = $wpdb->prepare( "
-            SELECT * FROM $wpdb->learnpress_question_answers WHERE question_id = %d
+            SELECT * FROM $wpdb->learnpress_question_answers 
+            WHERE question_id = %d 
+            ORDER BY rand()
           ", $question_id );
         
     $question_answers = $wpdb->get_results( $sql );
@@ -47,9 +49,24 @@ class ExamData {
     $sql = $wpdb->prepare( "
             SELECT * FROM $wpdb->learnpress_question_answers 
             WHERE question_id IN (" . join( ',', $format ) . ")
+            ORDER BY rand()
           ", $question_ids );
         
     $question_answers = $wpdb->get_results( $sql );
     return  $question_answers;
   }
+  public static function get_list_quizzes() {
+    // WP_Query arguments
+    $args = array (
+      'post_type'              => array( LP_QUIZ_CPT ),
+      'post_status'            => array( 'publish' ),
+      'nopaging'               => true,
+      'order'                  => 'ASC',
+      'orderby'                => 'menu_order',
+    );
+    // The Query
+    $quizzes = new WP_Query( $args );
+    return $quizzes;
+  }
+
 }
