@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: ExamPractice
+Plugin Name: Exam
 Plugin URI: 
-Description: ExamPractice
+Description: Exam
 Author: Thong Ngo
 Version: 1.0.0
 Author URI: 
@@ -23,11 +23,19 @@ class Exam {
   function __construct() {
     // hook init event to handle plugin initialization:
     add_action('init', array($this, 'init'));
+    
     // Register styles
-    wp_register_style( 'exam-styles', plugins_url('exam-styles.css', __FILE__) );
-
+    wp_register_style('exam-styles', plugins_url('exam-styles.css', __FILE__) );
+    wp_enqueue_script('exam-scripts', plugins_url('exam-scripts.js', __FILE__), array(), false, $in_footer = true);
+    
+    $this->includes();
   }
-
+  /**
+   * Includes needed files.
+   */
+  public function includes() {
+    require_once('exam-data.php');
+  }
   /**
    * Init the plugin configuration
    *
