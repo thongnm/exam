@@ -13,6 +13,8 @@ Author URI:
  */
 defined( 'ABSPATH' ) || exit();
 
+require_once dirname( __FILE__ ) . '/exam-constants.php';
+
 class Exam {
   protected static $instance = NULL;
 
@@ -24,10 +26,6 @@ class Exam {
     // hook init event to handle plugin initialization:
     add_action('init', array($this, 'init'));
     
-    // Register styles
-    wp_register_style('exam-styles', plugins_url('exam-styles.css', __FILE__) );
-    wp_enqueue_script('exam-scripts', plugins_url('exam-scripts.js', __FILE__), array(), false, $in_footer = true);
-    
     $this->includes();
   }
   /**
@@ -35,6 +33,7 @@ class Exam {
    */
   public function includes() {
     require_once('exam-data.php');
+    require_once('exam-learnpress.php');
   }
   /**
    * Init the plugin configuration
@@ -47,8 +46,19 @@ class Exam {
     add_shortcode('exam-quizzes',  array( $this, 'exam_quizzes_form'));
     add_shortcode('exam-practice',  array( $this, 'exam_practice_form'));
     add_shortcode('exam-test',  array( $this, 'exam_test_form'));
-    
+
+    add_action( 'wp_enqueue_scripts', array( $this, 'exam_enqueue_scripts' ));
+
+    ExamLernPress::register_quizz_category();
   }
+  
+  function exam_enqueue_scripts() {
+    // Register styles
+    wp_register_style('exam-styles', plugins_url('exam-styles.css', __FILE__) );
+    wp_enqueue_script('exam-scripts', plugins_url('exam-scripts.js', __FILE__), array(), false, $in_footer = true);
+   
+  }
+
   function exam_quizzes_form(){
     include 'quizzes-form.php';
   }
@@ -63,19 +73,3 @@ class Exam {
 
 Exam::get_instance();
 
-// add_filter( 'query_vars', 'exam_query_vars' );
-
-// function exam_rewrites_init(){
-//   add_rewrite_rule(
-//       'practice/([0-9]+)/?$',
-//       'index.php?pagename=practice&id=$matches[1]',
-//       'top' );
-//   add_rewrite_rule(
-//       'exam/([0-9]+)/?$',
-//       'index.php?pagename=exam&id=$matches[1]',
-//       'top' );
-// }
-// function exam_query_vars( $query_vars ){
-//     $query_vars[] = 'id';
-//     return $query_vars;
-// }

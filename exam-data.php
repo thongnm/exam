@@ -68,5 +68,28 @@ class ExamData {
     $quizzes = new WP_Query( $args );
     return $quizzes;
   }
+  public static function get_quizzes_by_category_slug($slug, $limit) {
+    // $quizz_category = get_terms( 'quizz_category', array(
+    //   'orderby'    => 'id',
+    //   'number' => 1,
+    //   'hide_empty' => 1 // hide categories with no posts
+    //   ) 
+    // );
+    // $category = $quizz_category[0];
+
+    // Define the query
+    // $args = array(
+    //   'post_type' => array( LP_QUIZ_CPT ),
+    //   'post_status' => array( 'publish' ),
+    //   'quizz_category'  => $slug,
+    //   'nopaging'               => true,
+    //   'orderby'                => 'rand',
+    // );
+
+    // // The Query
+    // $quizzes = new WP_Query( $args );
+    // return $quizzes;
+    return EXAM_GENERAL_LAW_LIMIT;
+  }
 
 }
