@@ -44,12 +44,15 @@ class Exam {
     
     // Add shortcode
     add_shortcode('exam-quizzes',  array( $this, 'exam_quizzes_form'));
+    add_shortcode('exam-tests',  array( $this, 'exam_tests_form'));
     add_shortcode('exam-practice',  array( $this, 'exam_practice_form'));
     add_shortcode('exam-test',  array( $this, 'exam_test_form'));
 
     add_action( 'wp_enqueue_scripts', array( $this, 'exam_enqueue_scripts' ));
 
-    ExamLernPress::register_quizz_category();
+    // ExamLernPress::register_quizz_category();
+    ExamLernPress::custom_quiz_general_meta_box();
+
   }
   
   function exam_enqueue_scripts() {
@@ -62,6 +65,9 @@ class Exam {
   function exam_quizzes_form(){
     include 'quizzes-form.php';
   }
+  function exam_tests_form(){
+    include 'tests-form.php';
+  }
   function exam_practice_form(){
     include 'practice-form.php';
   }
@@ -70,6 +76,7 @@ class Exam {
   }
 
 }
+
 
 Exam::get_instance();
 

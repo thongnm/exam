@@ -11,10 +11,10 @@ foreach ( $questions as $k => $v ) {
 }
 $answers = ExamData::get_all_answers($ids);
 
-$quizz_title = $questions[0]->quizz_title;
+$quizz_title = get_post($quiz_id)->post_title;
 ?>
 <div>
-  <h1><?php  echo $quizz_title ?></h1>
+  <h1>Ôn tập: <?php  echo $quizz_title ?></h1>
   <ul>
   <?php 
   foreach ( $questions as $k => $v ) {

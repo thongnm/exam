@@ -1,6 +1,6 @@
 <?php
 /**
- * Class ExamData
+ * Class ExamLernPress
  */
 defined( 'ABSPATH' ) || exit();
 
@@ -9,13 +9,13 @@ class ExamLernPress {
   public static function register_quizz_category() {
     register_taxonomy( 'quizz_category', array( 'lp_quiz' ),
       array(
-        'label'             => __( 'Quizz Categories', 'learnpress' ),
+        'label'             => 'Quizz Categories',
         'labels'            => array(
-          'name'          => __( 'Quizz Categories', 'learnpress' ),
-          'menu_name'     => __( 'Category', 'learnpress' ),
-          'singular_name' => __( 'Category', 'learnpress' ),
-          'add_new_item'  => __( 'Add New Quizz Category', 'learnpress' ),
-          'all_items'     => __( 'All Categories', 'learnpress' )
+          'name'          => 'Quizz Categories',
+          'menu_name'     => 'Category',
+          'singular_name' => 'Category',
+          'add_new_item'  => 'Add New Quizz Category',
+          'all_items'     => 'All Categories'
         ),
         'query_var'         => true,
         'public'            => true,
@@ -33,5 +33,69 @@ class ExamLernPress {
       )
     );
   }
-
+  public static function custom_quiz_general_meta_box(){
+    add_filter('learn_press_quiz_general_meta_box','ExamLernPress::learn_press_quiz_general_meta_box');
+    add_filter('learn_press_question_meta_box_args','ExamLernPress::learn_press_question_meta_box_args');
+  }
+  /**
+   * Customize Quiz General Setting box
+   *
+   * @param [type] $meta_box
+   * @return void
+   */
+  public static function learn_press_quiz_general_meta_box($meta_box){
+    $meta_box = array(
+      'title'      => 'General Settings',
+      'post_types' => LP_QUIZ_CPT,
+      'context'    => 'normal',
+      'priority'   => 'high',
+      'fields'     => array(
+        array(
+          'name' => 'Pháp luật chung',
+          'desc' => 'Chọn nếu là bài ôn tập Pháp luật chung.',
+          'id'   => '_exam_is_general_law',
+          'type' => 'yes_no',
+          'std'  => 'no'
+        ),
+        array(
+          'name' => 'Pháp luật chuyên ngành',
+          'desc' => 'Chọn nếu là bài ôn tập Pháp luật chuyên ngành.',
+          'id'   => '_exam_is_specific_law',
+          'type' => 'yes_no',
+          'std'  => 'no'
+        ),
+        array(
+          'name'         => 'Pháp luật chuyên ngành',
+          'desc'         => 'Đề thi chuyên môn sẽ lấy một số câu hỏi từ "Pháp luật chung" và "Pháp luật chuyên ngành" này.',
+          'id'           => '_exam_base_quizz',
+          'type'         => 'post',
+          'post_type'    => 'lp_quiz'
+        ),
+        array(
+          'name'         => 'Thời gian thi',
+          'desc'         => 'Thời gian thi.',
+          'id'           => '_exam_duration',
+          'type'         => 'duration',
+          'default_time' => 'minute',
+          'min'          => 0,
+          'std'          => 30,
+        )
+      )
+    );
+    return $meta_box;
+  }
+  /**
+   * Hide question setting box
+   *
+   * @param [type] $meta_box
+   * @return void
+   */
+  public static function learn_press_question_meta_box_args($meta_box) {
+    $meta_box = array(
+      'id'     => 'question_settings',
+      'title'  => __( 'Settings', 'learnpress' ),
+      'fields' => array()
+    );
+    return $meta_box;
+  }
 }

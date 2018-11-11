@@ -6,31 +6,22 @@ defined( 'ABSPATH' ) || exit();
 
 class ExamData {
   
-  public static function get_quizz_questions($quiz_id) {
+  public static function get_quizz_questions($quiz_id, $limit = 1000) {
     global $wpdb;
-    // WP_Query arguments
-    $args = array (
-      'post_type'              => array( LP_QUIZ_CPT ),
-      'post_status'            => array( 'publish' ),
-      'nopaging'               => true,
-      'order'                  => 'ASC',
-      'orderby'                => 'menu_order',
-    );
-    // The Query
-    $services = new WP_Query( $args );
     $query = $wpdb->prepare( "
-      SELECT p.*, qq.quiz_id, qq.question_order AS `order`,pp.post_title as quizz_title
+      SELECT p.*, qq.quiz_id, qq.question_order AS `order`
       FROM {$wpdb->posts} p 
       INNER JOIN {$wpdb->prefix}learnpress_quiz_questions qq ON p.ID = qq.question_id
-      INNER JOIN {$wpdb->posts} pp  ON pp.ID = qq.quiz_id
       WHERE qq.quiz_id = %d
       AND p.post_status = %s
       ORDER BY rand()
-      ",$quiz_id, 'publish' );
+      LIMIT %d
+      ",$quiz_id, 'publish', $limit );
 
     $results = $wpdb->get_results( $query );
     return $results;
   }
+  
   public static function get_question_answers($question_id) {
     global $wpdb;
     $sql = $wpdb->prepare( "
@@ -68,28 +59,65 @@ class ExamData {
     $quizzes = new WP_Query( $args );
     return $quizzes;
   }
-  public static function get_quizzes_by_category_slug($slug, $limit) {
-    // $quizz_category = get_terms( 'quizz_category', array(
-    //   'orderby'    => 'id',
-    //   'number' => 1,
-    //   'hide_empty' => 1 // hide categories with no posts
-    //   ) 
-    // );
-    // $category = $quizz_category[0];
+  public static function get_list_tests() {
+    // WP_Query arguments
+    $args = array (
+      'post_type'              => array( LP_QUIZ_CPT ),
+      'post_status'            => array( 'publish' ),
+      'nopaging'               => true,
+      'order'                  => 'ASC',
+      'orderby'                => 'menu_order',
+      'meta_query' => array(
+        'relation' => 'AND',
+        array(
+            'key' => '_exam_is_general_law',
+            'value' => 'yes',
+            'compare' => '!=',
+        ),
+        array(
+          'key' => '_exam_is_specific_law',
+          'value' => 'yes',
+          'compare' => '!=',
+        )
+      )
 
-    // Define the query
-    // $args = array(
-    //   'post_type' => array( LP_QUIZ_CPT ),
-    //   'post_status' => array( 'publish' ),
-    //   'quizz_category'  => $slug,
-    //   'nopaging'               => true,
-    //   'orderby'                => 'rand',
-    // );
-
-    // // The Query
-    // $quizzes = new WP_Query( $args );
-    // return $quizzes;
-    return EXAM_GENERAL_LAW_LIMIT;
+    );
+    // The Query
+    $quizzes = new WP_Query( $args );
+    return $quizzes;
+  }
+  public static function get_general_law_quiz() {
+    // WP_Query arguments
+    $args = array (
+      'post_type'              => array( LP_QUIZ_CPT ),
+      'post_status'            => array( 'publish' ),
+      'nopaging'               => true,
+      'meta_query' => array(
+        array(
+            'key' => '_exam_is_general_law',
+            'value' => 'yes',
+            'compare' => '=',
+        )
+    )
+    );
+    // The Query
+    $results = get_posts( $args );
+    return $results[0];
+  }
+  public static function get_questions_for_test($quiz_id) {
+    // Get general law questions
+    $genral_law_quiz = ExamData::get_general_law_quiz();
+    $general_law_questions = ExamData::get_quizz_questions($genral_law_quiz->ID, 2);
+    // Get specific law questions
+    $base_quiz_id = get_post_meta($quiz_id,'_exam_base_quizz', true);
+    $specific_law_questions = ExamData::get_quizz_questions($base_quiz_id, 3);
+    
+    // Get remaining questions
+    $questions = ExamData::get_quizz_questions($quiz_id, 25);
+    
+    $merged = array_merge($general_law_questions, $specific_law_questions, $questions);
+    shuffle($merged);
+    return $merged;
   }
 
 }
