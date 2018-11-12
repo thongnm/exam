@@ -1,10 +1,10 @@
 <?php
 /**
- * Class ExamLernPress
+ * Class ExamLearnPress
  */
 defined( 'ABSPATH' ) || exit();
 
-class ExamLernPress {
+class ExamLearnPress {
   
   public static function register_quizz_category() {
     register_taxonomy( 'quizz_category', array( 'lp_quiz' ),
@@ -34,8 +34,8 @@ class ExamLernPress {
     );
   }
   public static function custom_quiz_general_meta_box(){
-    add_filter('learn_press_quiz_general_meta_box','ExamLernPress::learn_press_quiz_general_meta_box');
-    add_filter('learn_press_question_meta_box_args','ExamLernPress::learn_press_question_meta_box_args');
+    add_filter('learn_press_quiz_general_meta_box','ExamLearnPress::learn_press_quiz_general_meta_box');
+    add_filter('learn_press_question_meta_box_args','ExamLearnPress::learn_press_question_meta_box_args');
   }
   /**
    * Customize Quiz General Setting box
@@ -97,5 +97,34 @@ class ExamLernPress {
       'fields' => array()
     );
     return $meta_box;
+  }
+  public static function add_user_items($item_id, $data) {
+    // global $wpdb;
+    // $user_id = get_current_user_id();
+    // $wpdb->insert(
+    //   $wpdb->learnpress_user_items,
+    //   array(
+    //     'item_id'   => $item_id,
+    //     'user_id'   => $user_id,
+    //     'start_time' => current_time( 'mysql' )
+    //   )
+    // );
+    // return $wpdb->insert_id;
+  }
+  public static function add_user_items_meta($ui_id, $test_data) {
+    // global $wpdb;
+    // $wpdb->insert(
+    //   $wpdb->learnpress_user_itemmeta,
+    //   array(
+    //     'learnpress_user_item_id'   => $ui_id,
+    //     'meta_key'   => '_exam_test_questions',
+    //     'meta_value' => maybe_serialize($test_data)
+    //   )
+    // );
+    // return $wpdb->insert_id;
+  }
+  public static function get_duration($quiz_id) {
+    $duration =  learn_press_human_time_to_seconds( get_post_meta( $quiz_id, '_exam_duration', true ) );
+    return $duration;
   }
 }

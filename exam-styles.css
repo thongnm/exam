@@ -1,3 +1,48 @@
 .exam_correct_answer {
   color: blue;
 }
+.exam-btn-question {
+  margin: 2px;
+}
+.exam-question {
+  display: none;
+}
+.exam_current_question {
+  display: block;
+}
+.exam-question-index {
+  font-weight: bold;
+}
+.exam-btn-finish-container {
+  padding-top: 20px;
+}
+.exam-btn-finish {
+  width: 100%;
+}
+.exam-quizz-title {
+  font-size:2rem;
+  font-weight: bold;
+}
+.exam-quizz-timer {
+  font-size:2rem;
+  font-weight: bold;
+}
+.exam-question-container {
+  min-height: 300px;
+}
+.exam-question-content {
+  padding-top: 10px;
+}
+.exam-answers-container {
+  padding-left: 20px;
+}
+.exam_current_question_btn {
+  background-color: #d7d6d6;
+  color: blue;
+}
+.exam-btn-next {
+  float: right;
+}
+.exam_question_btn_answered {
+  background-color: coral;
+}

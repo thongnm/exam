@@ -50,8 +50,8 @@ class Exam {
 
     add_action( 'wp_enqueue_scripts', array( $this, 'exam_enqueue_scripts' ));
 
-    // ExamLernPress::register_quizz_category();
-    ExamLernPress::custom_quiz_general_meta_box();
+    // ExamLearnPress::register_quizz_category();
+    ExamLearnPress::custom_quiz_general_meta_box();
 
   }
   
@@ -59,6 +59,10 @@ class Exam {
     // Register styles
     wp_register_style('exam-styles', plugins_url('exam-styles.css', __FILE__) );
     wp_enqueue_script('exam-scripts', plugins_url('exam-scripts.js', __FILE__), array(), false, $in_footer = true);
+    
+    // Bootstrap
+    wp_register_style('bootstrap-styles', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' );
+    wp_enqueue_script('bootstrap.min', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', array(), false, $in_footer = true);
    
   }
 

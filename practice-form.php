@@ -41,14 +41,14 @@ $quizz_title = get_post($quiz_id)->post_title;
         }
         $option_id  = 'opt_'. $question_id . '_' . $v1['question_answer_id']
         ?>
-      <div style="padding-left:20px">
+      <div class="exam-answers-container">
         <div class="radio">
-        <label onclick="examShowAnswer('<?php echo $question_id?>')" id="<?php echo $option_id?>" ><input type="radio" name="optradio_<?php echo $v->ID?>" >  <?php echo $v1['text'] ?></label>
-        <br>
+          <label onclick="examShowAnswer('<?php echo $question_id?>')" id="<?php echo $option_id?>" ><input type="radio" name="optradio_<?php echo $v->ID?>" >  <?php echo $v1['text'] ?></label>
+          <br>
         </div>
       </div>
-    </li>
     <?php } ?>
+  </li>
   <?php } ?>
 </ul>
 </div>
