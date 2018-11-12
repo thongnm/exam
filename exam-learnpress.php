@@ -98,30 +98,55 @@ class ExamLearnPress {
     );
     return $meta_box;
   }
-  public static function add_user_items($item_id, $data) {
-    // global $wpdb;
-    // $user_id = get_current_user_id();
-    // $wpdb->insert(
-    //   $wpdb->learnpress_user_items,
-    //   array(
-    //     'item_id'   => $item_id,
-    //     'user_id'   => $user_id,
-    //     'start_time' => current_time( 'mysql' )
-    //   )
-    // );
-    // return $wpdb->insert_id;
+  public static function add_user_items($item_id) {
+    global $wpdb;
+    $user_id = get_current_user_id();
+    $wpdb->insert(
+      $wpdb->learnpress_user_items,
+      array(
+        'item_id'   => $item_id,
+        'user_id'   => $user_id,
+        'start_time' => current_time( 'mysql' )
+      )
+    );
+    return $wpdb->insert_id;
   }
-  public static function add_user_items_meta($ui_id, $test_data) {
-    // global $wpdb;
-    // $wpdb->insert(
-    //   $wpdb->learnpress_user_itemmeta,
-    //   array(
-    //     'learnpress_user_item_id'   => $ui_id,
-    //     'meta_key'   => '_exam_test_questions',
-    //     'meta_value' => maybe_serialize($test_data)
-    //   )
-    // );
-    // return $wpdb->insert_id;
+  public static function update_user_items($ui_id) {
+    global $wpdb;
+    $user_id = get_current_user_id();
+    $wpdb->insert(
+      $wpdb->learnpress_user_items,
+      array(
+        'item_id'   => $item_id,
+        'user_id'   => $user_id,
+        'start_time' => current_time( 'mysql' )
+      )
+    );
+    return $wpdb->insert_id;
+  }
+  public static function get_user_items_meta($ui_id, $key) {
+    global $wpdb;
+    $sql = $wpdb->prepare( "
+            SELECT * FROM $wpdb->learnpress_user_itemmeta 
+            WHERE learnpress_user_item_id = %d 
+            AND meta_key = %s
+          ", $ui_id, $key);
+        
+    $results = $wpdb->get_results( $sql );
+    return  $results[0];
+
+  }
+  public static function add_user_items_meta($ui_id, $test_data, $key) {
+    global $wpdb;
+    $wpdb->insert(
+      $wpdb->learnpress_user_itemmeta,
+      array(
+        'learnpress_user_item_id'   => $ui_id,
+        'meta_key'   => $key,
+        'meta_value' => maybe_serialize($test_data)
+      )
+    );
+    return $wpdb->insert_id;
   }
   public static function get_duration($quiz_id) {
     $duration =  learn_press_human_time_to_seconds( get_post_meta( $quiz_id, '_exam_duration', true ) );

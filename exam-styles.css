@@ -39,10 +39,14 @@
 .exam_current_question_btn {
   background-color: #d7d6d6;
   color: blue;
+  font-weight: bold;
 }
 .exam-btn-next {
   float: right;
 }
 .exam_question_btn_answered {
   background-color: coral;
+}
+.exam-quizz-title {
+  margin-bottom: 10px;
 }

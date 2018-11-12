@@ -115,9 +115,83 @@ class ExamData {
     // Get remaining questions
     $questions = ExamData::get_quizz_questions($quiz_id, 25);
     
-    $merged = array_merge($general_law_questions, $specific_law_questions, $questions);
-    shuffle($merged);
-    return $merged;
+    $questions_law = array_merge($general_law_questions, $specific_law_questions);
+    
+    $obj = new stdClass;
+    $obj->questions_specific = $questions;
+    $obj->questions_law = $questions_law ;
+    return $obj;
+  }
+ 
+  public static function finish_test_ajax_request() {
+    // The $_REQUEST contains all the data sent via ajax
+    if ( isset($_REQUEST) ) {
+      $ui_id = $_POST['ui_id'];
+      $user_answers = json_decode(stripslashes($_POST['user_answers']));
+      // Get test data array(question => answer)
+      $meta_data = ExamLearnPress::get_user_items_meta($ui_id, META_KEY_EXAM_TEST_QUESTIONS);
+      $test_data = maybe_unserialize($meta_data->meta_value);
+      
+      // Get question law meta
+      $meta_data_law = ExamLearnPress::get_user_items_meta($ui_id, META_KEY_EXAM_TEST_QUESTIONS_LAW);
+      $questions_law = maybe_unserialize($meta_data_law->meta_value);
+      $law_correct = 0;
+      $correct_count = 0;
+      $incorrect_count = 0;
+      $unanswer_count = 0;
+      foreach ($test_data as $question_id => $answer_id) {
+        $is_answered = False;
+        foreach ($user_answers as $a) {
+          if($question_id == $a->question_id) {
+            $is_answered = True;
+            $test_answered[$question_id] = $a->answer_id;
+            if($answer_id == $a->answer_id) {
+              $correct_count++;
+              if(in_array($question_id, $questions_law)) {
+                $law_correct++;
+              }
+            } else {
+              $incorrect_count++;
+            }
+          }
+        }
+        if(!$is_answered) {
+          $unanswer_count++;
+        }
+      }
+      $score = $correct_count * SCORE_PER_QUESTION;
+      // Check is pass
+      $is_passed = False;
+      if ($law_correct >= EXAM_MIN_LAW_TO_PASS
+        && $score >= EXAM_MIN_SCORE_TO_PASS) {
+        $is_passed = True;
+      }
+      // Save test data
+      ExamLearnPress::add_user_items_meta($ui_id, $test_answered, META_KEY_EXAM_TEST_ANSWERS);
+
+      // Return values
+      $obj = new stdClass;
+      $obj->law_correct = $law_correct;
+      $obj->correct_count = $correct_count;
+      $obj->incorrect_count = $incorrect_count;
+      $obj->unanswer_count = $unanswer_count;
+      $obj->score = $score;
+      $obj->is_passed = $is_passed;
+      $obj->end_time = current_time( 'mysql' );
+      
+      // Save test data
+      ExamLearnPress::add_user_items_meta($ui_id, $obj, META_KEY_EXAM_TEST_RESULT);
+
+      
+      $obj->questions_with_answers = $test_data;
+
+
+      wp_send_json($obj);
+
+    }
+   
+  // Always die in functions echoing ajax content
+  die();
   }
 
 }

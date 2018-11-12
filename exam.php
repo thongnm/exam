@@ -49,6 +49,7 @@ class Exam {
     add_shortcode('exam-test',  array( $this, 'exam_test_form'));
 
     add_action( 'wp_enqueue_scripts', array( $this, 'exam_enqueue_scripts' ));
+    add_action( 'wp_ajax_finish_test_ajax_request', 'ExamData::finish_test_ajax_request' );
 
     // ExamLearnPress::register_quizz_category();
     ExamLearnPress::custom_quiz_general_meta_box();

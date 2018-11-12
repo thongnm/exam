@@ -6,9 +6,19 @@ wp_enqueue_style('exam-styles');
 
 $quiz_id = $_GET['id'];
 
-$questions = ExamData::get_questions_for_test($quiz_id);
+$result = ExamData::get_questions_for_test($quiz_id);
+$questions_law = $result->questions_law;
+$questions_specific = $result->questions_specific;
 
-$ui_id = ExamLearnPress::add_user_items($quiz_id, $questions);
+foreach ( $questions_law as $k => $v ) {
+  $question_law_ids[] = $v->ID;
+}
+
+$ui_id = ExamLearnPress::add_user_items($quiz_id);
+ExamLearnPress::add_user_items_meta($ui_id, $question_law_ids, META_KEY_EXAM_TEST_QUESTIONS_LAW);
+
+$questions = array_merge($questions_law, $questions_specific);
+shuffle($questions);
 
 foreach ( $questions as $k => $v ) {
   $ids[] = $v->ID;
@@ -22,9 +32,42 @@ $start_time = current_time( 'mysql' );
 $duration = ExamLearnPress::get_duration($quiz_id);
 
 ?>
-<div>
+<div id="exam_test_page">
+<div class="exam-quizz-title">Thi thử: <?php  echo $quizz_title ?></div>
+<div id="exam_result_container">
+  <table class="table">
+    <tr class="success">
+      <td>Kết quả: </td>
+      <td><div id="exam_result_is_passed"></div></td>
+    </tr>
+    <tr>
+      <td>Điểm: </td>
+      <td> <div id="exam_result_score"></div></div></td>
+    </tr>
+    <tr>
+      <td>Số câu đúng: </td>
+      <td> <div id="exam_result_correct_count"></div></td>
+    </tr>
+    <tr>
+      <td>Số câi sai: </td>
+      <td><div id="exam_result_incorrect_count"></div></td>
+    </tr>
+    <tr>
+      <td>Số câi chưa trả lời: </td>
+      <td><div id="exam_result_unanswer_count"></div></td>
+    </tr>
+    <tr>
+      <td>Chi tiết<title></title>: </td>
+      <td>
+        <button id="exam_review_result" onclick="showReview()" type="button" class="btn btn-primary">
+            Xem chi tiết
+        </button>
+      </td>
+    </tr>
+  </table>
+</div>
+<div id="exam_test_container">
   <div class="exam-question-header">
-    <div class="exam-quizz-title">Thi thử: <?php  echo $quizz_title ?></div>
     <div class="exam-quizz-timer">Thời gian: <span id="exam_timer"></span></div>
   </div>
   <div class="exam-question-content">
@@ -114,12 +157,15 @@ $duration = ExamLearnPress::get_duration($quiz_id);
   </div>
   <!-- End Modal -->
 </div>
-
+</div>
 <script>
 var exam_question_ids = '<?php echo implode(",", $ids )?>';
 var exam_current_index = 0;
 var exam_list_ids = exam_question_ids.split(',');
 var user_answers = [];
+var exam_ajax_url = '<?php echo admin_url( 'admin-ajax.php') ?>';
+var $ = jQuery;
+
 function showTimer() {
     var total = <?php echo $duration ?>;
     var timer_id = 'exam_timer';
@@ -132,7 +178,8 @@ function showTimer() {
         // If the count down is over, write some text 
         if (minutes == 0 && seconds == 0) {
             clearInterval(x);
-            document.getElementById(timer_id).innerHTML = "EXPIRED";
+            document.getElementById(timer_id).innerHTML = "Hết giờ";
+            submitTest();
         }
     }, 1000);
 }
@@ -147,7 +194,6 @@ function userAnswer(question_id, answer_id) {
   });
   if(!isExisted) user_answers.push({question_id, answer_id});
 
-  var $ = jQuery;
   $('#exam_question_btn_'+ exam_current_index).addClass("exam_question_btn_answered");
   
 }
@@ -156,7 +202,7 @@ function showPrevNext(index) {
     || (index > 0 && exam_current_index === exam_list_ids.length-1))  return;
   showQuestion(exam_current_index + index)
 }
-function init($) {
+function init() {
   $("#exam_finish_btn").on("click", function(){
     $("#mi-modal").modal('show');
   });
@@ -164,15 +210,53 @@ function init($) {
     submitTest();
     $("#mi-modal").modal('hide');
   });
+  $('#exam_result_container').hide();
 }
 
 function submitTest() {
-  console.log('user_answers', user_answers);
+  $.ajax({
+        url: exam_ajax_url, 
+        method: 'post',
+        data: {
+            'action': 'finish_test_ajax_request',
+            'user_answers' : JSON.stringify(user_answers),
+            'ui_id': <?php echo $ui_id?>
+        },
+        success:function(data) {
+            showTestResult(data);
+        },
+        error: function(errorThrown){
+            console.log(errorThrown);
+        }
+  }); 
+  
 }
+function showTestResult(data) {
+  $('#exam_test_container').hide();
+  $('#exam_result_container').show();
+  $('#exam_result_is_passed').html((data.is_passed)? 'Đạt': 'Không đạt');
+  $('#exam_result_score').html(data.score);
+  $('#exam_result_correct_count').html(data.correct_count);
+  $('#exam_result_incorrect_count').html(data.incorrect_count);
+  $('#exam_result_unanswer_count').html(data.unanswer_count);
 
+  window.questions_with_answers = data.questions_with_answers;
+}
+function showReview() {
+  $('#exam_test_container').show();
+  // hide timer
+  $('.exam-question-header').hide();
+  // hide finish button
+  $('.exam-btn-finish-container').hide();
+  // set correct answer
+  $.each(window.questions_with_answers, function(question_id, answer_id) {
+    $(`#opt_${question_id}_${answer_id}`).addClass('exam_correct_answer');
+  });
+
+}
 function showQuestion(index) {
   // show/hide question
-  var $ = jQuery;
+  
   $('#exam_question_'+ exam_list_ids[exam_current_index]).removeClass("exam_current_question");
   $('#exam_question_'+ exam_list_ids[index]).addClass("exam_current_question");
   // set current question button
@@ -183,15 +267,15 @@ function showQuestion(index) {
 }
 
 (function ($) {
-  init($);
+  init();
   showTimer();
-  showQuestion(exam_current_index)
+  showQuestion(exam_current_index);
 })(jQuery);
 
 </script>
 
 <?php
 // Save user item meta data
-ExamLearnPress::add_user_items_meta($ui_id, $test_data);
+ExamLearnPress::add_user_items_meta($ui_id, $test_data, META_KEY_EXAM_TEST_QUESTIONS);
 ?>
 
