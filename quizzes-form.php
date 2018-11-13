@@ -1,20 +1,20 @@
 <?php
 // Load styles 
+wp_enqueue_style('bootstrap-styles');
 wp_enqueue_style('exam-styles');
 
-$quizzes = ExamData::get_list_quizzes();
+if(!isset($url)) {
+  $url = EXAM_PRATICE_PAGE_SLUG;
+}
 ?>
-<div>
-<ul>
+<div class="list-group">
     <?php
     while ( $quizzes->have_posts() ) {
       $quizzes->the_post();
       ?>
-      <li id="post-<?php the_ID(); ?>" >
-        <a href="<?php bloginfo('url')?>/practice/?id=<?php the_ID(); ?>">
+        <a href="<?php bloginfo('url')?>/<?php echo $url ?>/?id=<?php the_ID(); ?><?php echo isset($type)? '&type='. $type : '' ?>  " class="list-group-item">
           <?php the_title( '<div>', '</div>' ); ?>
         </a>
-      </li>
       <?php
     }
     ?>

@@ -59,6 +59,34 @@ class ExamData {
     $quizzes = new WP_Query( $args );
     return $quizzes;
   }
+  public static function get_list_quizzes_law() {
+    // WP_Query arguments
+    $args = array (
+      'post_type'              => array( LP_QUIZ_CPT ),
+      'post_status'            => array( 'publish' ),
+      'nopaging'               => true,
+      'order'                  => 'ASC',
+      'orderby'                => 'menu_order',
+      'meta_query' => array(
+        'relation' => 'OR',
+        array(
+            'key' => '_exam_is_general_law',
+            'value' => 'yes',
+            'compare' => '==',
+        ),
+        array(
+          'key' => '_exam_is_specific_law',
+          'value' => 'yes',
+          'compare' => '==',
+        )
+      )
+
+    );
+    // The Query
+    $quizzes = new WP_Query( $args );
+    return $quizzes;
+  }
+
   public static function get_list_tests() {
     // WP_Query arguments
     $args = array (
@@ -122,11 +150,28 @@ class ExamData {
     $obj->questions_law = $questions_law ;
     return $obj;
   }
+  public static function get_questions_for_test_renew($quiz_id) {
+    // Get general law questions
+    $genral_law_quiz = ExamData::get_general_law_quiz();
+    $general_law_questions = ExamData::get_quizz_questions($genral_law_quiz->ID, 5);
+    // Get specific law questions
+    $base_quiz_id = get_post_meta($quiz_id,'_exam_base_quizz', true);
+    $specific_law_questions = ExamData::get_quizz_questions($base_quiz_id, 5);
+    
+    $questions_law = array_merge($general_law_questions, $specific_law_questions);
+    
+    $obj = new stdClass;
+    $obj->questions_specific = array();
+    $obj->questions_law = $questions_law ;
+    return $obj;
+  }
  
   public static function finish_test_ajax_request() {
     // The $_REQUEST contains all the data sent via ajax
     if ( isset($_REQUEST) ) {
       $ui_id = $_POST['ui_id'];
+      $test_type = $_POST['test_type'];
+
       $user_answers = json_decode(stripslashes($_POST['user_answers']));
       // Get test data array(question => answer)
       $meta_data = ExamLearnPress::get_user_items_meta($ui_id, META_KEY_EXAM_TEST_QUESTIONS);
@@ -139,6 +184,7 @@ class ExamData {
       $correct_count = 0;
       $incorrect_count = 0;
       $unanswer_count = 0;
+      $test_answered = array();
       foreach ($test_data as $question_id => $answer_id) {
         $is_answered = False;
         foreach ($user_answers as $a) {
@@ -162,7 +208,10 @@ class ExamData {
       $score = $correct_count * SCORE_PER_QUESTION;
       // Check is pass
       $is_passed = False;
-      if ($law_correct >= EXAM_MIN_LAW_TO_PASS
+      if ($type == EXAM_TYPE_RENEW && $score >= EXAM_MIN_SCORE_TO_PASS_RENEW) {
+        $is_passed = True;
+      }
+      else if ($law_correct >= EXAM_MIN_LAW_TO_PASS
         && $score >= EXAM_MIN_SCORE_TO_PASS) {
         $is_passed = True;
       }
@@ -190,8 +239,8 @@ class ExamData {
 
     }
    
-  // Always die in functions echoing ajax content
-  die();
+    // Always die in functions echoing ajax content
+    die();
   }
 
 }

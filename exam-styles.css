@@ -1,6 +1,13 @@
 .exam_correct_answer {
   color: blue;
 }
+.exam_question_index {
+  margin-right: 10px;
+  font-weight: bold;
+}
+.exam_question_title {
+  font-weight: bold;
+}
 .exam-btn-question {
   margin: 2px;
 }
@@ -33,6 +40,12 @@
 .exam-question-content {
   padding-top: 10px;
 }
+.exam-question-header {
+  background-color: #3e8ec4;
+  color: white;
+  height: 30px;
+  text-align: center;
+}
 .exam-answers-container {
   padding-left: 20px;
 }
@@ -49,4 +62,9 @@
 }
 .exam-quizz-title {
   margin-bottom: 10px;
+}
+.modal-header {
+  background-color: #3e8ec4;
+  color: white;
+  font-weight: bold;
 }

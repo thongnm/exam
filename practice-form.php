@@ -14,16 +14,20 @@ $answers = ExamData::get_all_answers($ids);
 $quizz_title = get_post($quiz_id)->post_title;
 ?>
 <div>
-  <h1>Ôn tập: <?php  echo $quizz_title ?></h1>
-  <ul>
+  <h1>Luyện thi chứng chỉ hành nghề xây dựng: <?php  echo $quizz_title ?></h1>
+  <div>
   <?php 
+  $index = 1;
   foreach ( $questions as $k => $v ) {
     $post_title = $v->post_title;
     $question_id = $v->ID;
     $correct = 0;
     ?>
-    <li>
-      <div><?php echo $post_title ?></div>
+    <div>
+      <div>
+        <span class="exam_question_index"> Câu <?php echo $index++ ?>:</span>
+        <?php echo $post_title ?>
+       </div>
       <?php 
       foreach ( $answers as $k1 => $v1 ) {
         if ($v1->question_id != $question_id) continue;
@@ -47,9 +51,9 @@ $quizz_title = get_post($quiz_id)->post_title;
           <br>
         </div>
       </div>
-    <?php } ?>
-  </li>
+      <?php } ?>
+    </div>
   <?php } ?>
-</ul>
+</div>
 </div>
 

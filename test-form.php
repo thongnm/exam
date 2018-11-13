@@ -4,9 +4,19 @@ global $wpdb;
 wp_enqueue_style('bootstrap-styles');
 wp_enqueue_style('exam-styles');
 
+if(!isset($_GET['id'])) {
+  return;
+}
 $quiz_id = $_GET['id'];
+$type = isset($_GET['type']) ? $_GET['type'] : '';
 
-$result = ExamData::get_questions_for_test($quiz_id);
+if(!$quiz_id) return;
+
+if ($type == EXAM_TYPE_RENEW) {
+  $result = ExamData::get_questions_for_test_renew($quiz_id);
+} else {
+  $result = ExamData::get_questions_for_test($quiz_id);
+}
 $questions_law = $result->questions_law;
 $questions_specific = $result->questions_specific;
 
@@ -29,11 +39,14 @@ $quizz_title = get_post($quiz_id)->post_title;
 
 $start_time = current_time( 'mysql' );
 
-$duration = ExamLearnPress::get_duration($quiz_id);
+$duration = EXAM_TEST_DURATION;
+if ($type == EXAM_TYPE_RENEW) {
+  $duration = EXAM_TEST_DURATION_RENEW;
+} 
 
 ?>
 <div id="exam_test_page">
-<div class="exam-quizz-title">Thi thử: <?php  echo $quizz_title ?></div>
+<div class="exam-quizz-title">Trắc nghiệm <?php  echo $quizz_title ?></div>
 <div id="exam_result_container">
   <table class="table">
     <tr class="success">
@@ -49,11 +62,11 @@ $duration = ExamLearnPress::get_duration($quiz_id);
       <td> <div id="exam_result_correct_count"></div></td>
     </tr>
     <tr>
-      <td>Số câi sai: </td>
+      <td>Số câu sai: </td>
       <td><div id="exam_result_incorrect_count"></div></td>
     </tr>
     <tr>
-      <td>Số câi chưa trả lời: </td>
+      <td>Số câu chưa trả lời: </td>
       <td><div id="exam_result_unanswer_count"></div></td>
     </tr>
     <tr>
@@ -94,7 +107,9 @@ $duration = ExamLearnPress::get_duration($quiz_id);
           $correct = 0;
           ?>
           <li id="exam_question_<?php echo $question_id?>" class="exam-question" >
-            <div><span class="exam-question-index">Câu <?php echo $index++ ?>:</span> <?php echo $post_title ?></div>
+            <div>
+                <span class="exam_question_index">Câu <?php echo $index++ ?>:</span>
+                <span class="exam_question_title"> <?php echo $post_title ?></div></span>
             <div class="exam-answers-container">
             <?php 
             foreach ( $answers as $k1 => $v1 ) {
@@ -122,16 +137,16 @@ $duration = ExamLearnPress::get_duration($quiz_id);
         </ul>
       </div>
       <div class="exam-btn-prevnext-container">
-        <button onclick="showPrevNext(-1)" type="button" class="btn btn-default exam-btn-prev">
-          <<
+        <button onclick="showPrevNext(-1)" type="button" class="btn btn-primary exam-btn-prev">
+          << Câu trước
         </button>
-        <button onclick="showPrevNext(1)" type="button" class="btn btn-default exam-btn-next">
-          >>
+        <button onclick="showPrevNext(1)" type="button" class="btn btn-primary exam-btn-next">
+          Câu sau >>
         </button>
       </div>
       <div class="exam-btn-finish-container">
-        <button type="button" id="exam_finish_btn" class="btn btn-primary exam-btn-finish">
-          Kết thúc
+        <button type="button" id="exam_finish_btn" class="btn btn-danger exam-btn-finish">
+          Kết thúc bài thi
         </button>
       </div>
     </div>
@@ -150,7 +165,8 @@ $duration = ExamLearnPress::get_duration($quiz_id);
         <div>Bạn muốn kết thúc bài thi?</div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="modal-btn-si">Đồng ý</button>
+        <button type="button" class="btn btn-primary" id="modal-btn-cancel">Thoát</button>
+        <button type="button" class="btn btn-danger" id="modal-btn-si">Đồng ý</button>
       </div>
     </div>
     </div>
@@ -210,6 +226,9 @@ function init() {
     submitTest();
     $("#mi-modal").modal('hide');
   });
+  $("#modal-btn-cancel").on("click", function(){
+    $("#mi-modal").modal('hide');
+  });
   $('#exam_result_container').hide();
 }
 
@@ -220,7 +239,8 @@ function submitTest() {
         data: {
             'action': 'finish_test_ajax_request',
             'user_answers' : JSON.stringify(user_answers),
-            'ui_id': <?php echo $ui_id?>
+            'ui_id': <?php echo $ui_id?>,
+            'test_type': '<?php echo $type?>'
         },
         success:function(data) {
             showTestResult(data);

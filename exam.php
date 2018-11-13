@@ -43,10 +43,15 @@ class Exam {
   function init() {
     
     // Add shortcode
-    add_shortcode('exam-quizzes',  array( $this, 'exam_quizzes_form'));
-    add_shortcode('exam-tests',  array( $this, 'exam_tests_form'));
-    add_shortcode('exam-practice',  array( $this, 'exam_practice_form'));
-    add_shortcode('exam-test',  array( $this, 'exam_test_form'));
+    add_shortcode('danh-sach-on-tap',  array( $this, 'exam_quizzes_all'));
+    add_shortcode('danh-sach-on-tap-luat',  array( $this, 'exam_quizzes_law'));
+    add_shortcode('danh-sach-on-tap-chuyen-nganh',  array( $this, 'exam_quizzes_specific'));
+    
+    add_shortcode('danh-sach-thi-cap-moi',  array( $this, 'exam_tests_form'));
+    add_shortcode('danh-sach-thi-cap-lai',  array( $this, 'exam_tests_form_renew'));
+    
+    add_shortcode('on-tap',  array( $this, 'exam_practice_form'));
+    add_shortcode('thi-thu',  array( $this, 'exam_test_form'));
 
     add_action( 'wp_enqueue_scripts', array( $this, 'exam_enqueue_scripts' ));
     add_action( 'wp_ajax_finish_test_ajax_request', 'ExamData::finish_test_ajax_request' );
@@ -67,17 +72,49 @@ class Exam {
    
   }
 
-  function exam_quizzes_form(){
+  function exam_quizzes_all(){
+    $quizzes = ExamData::get_list_quizzes();
+    ob_start();
     include 'quizzes-form.php';
+    return ob_get_clean();
+  }
+  function exam_quizzes_law(){
+    $quizzes = ExamData::get_list_quizzes_law();
+    ob_start();
+    include 'quizzes-form.php';
+    return ob_get_clean();
+  }
+  function exam_quizzes_specific(){
+    $quizzes = ExamData::get_list_tests();
+    ob_start();
+    include 'quizzes-form.php';
+    return ob_get_clean();
   }
   function exam_tests_form(){
-    include 'tests-form.php';
+    $quizzes = ExamData::get_list_tests();
+    $url = EXAM_TEST_PAGE_SLUG;
+    ob_start();
+    include 'quizzes-form.php';
+    return ob_get_clean();
   }
+  function exam_tests_form_renew(){
+    $quizzes = ExamData::get_list_tests();
+    $url = EXAM_TEST_PAGE_SLUG;
+    $type = EXAM_TYPE_RENEW;
+    ob_start();
+    include 'quizzes-form.php';
+    return ob_get_clean();
+  }
+
   function exam_practice_form(){
+    ob_start();
     include 'practice-form.php';
+    return ob_get_clean();
   }
   function exam_test_form(){
+    ob_start();
     include 'test-form.php';
+    return ob_get_clean();
   }
 
 }
