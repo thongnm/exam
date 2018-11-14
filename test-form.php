@@ -3,7 +3,11 @@ global $wpdb;
 // Load styles 
 wp_enqueue_style('bootstrap-styles');
 wp_enqueue_style('exam-styles');
-
+// make user user logged in
+if(!is_user_logged_in()) {
+  $url = get_bloginfo('url') . '/'. EXAM_LOGIN_SLUG;
+  wp_redirect($url);
+}
 if(!isset($_GET['id'])) {
   return;
 }
