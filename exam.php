@@ -74,17 +74,20 @@ class Exam {
     add_action( 'admin_post_nopriv_exam_register_user', 'ExamHandler::register_user' );
     // Change password handler
     add_action( 'admin_post_exam_change_password', 'ExamHandler::change_password' );
-    
+    add_action('admin_enqueue_scripts', array( $this, 'admin_style')) ;
+
     add_filter( 'query_vars', array( $this, 'add_query_vars_filter') );
 
     add_filter( 'wp_mail_from_name', array( $this,'my_mail_from_name'));
     add_filter( 'authenticate',  array( $this,'check_active_user'), 100, 2 );
-
+    
     // ExamLearnPress::register_quizz_category();
     ExamLearnPress::custom_quiz_general_meta_box();
 
   }
-
+  function admin_style() {
+    wp_enqueue_style('admin-styles',plugins_url('exam-admin-styles.css', __FILE__));
+  }
   public function check_active_user( $user, $username ){
     if(!isset($user->ID)) return;
 		$lock = get_user_meta( $user->ID, "verify-lock", true );

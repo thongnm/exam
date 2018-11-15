@@ -1,0 +1,24 @@
+#toplevel_page_learn_press > ul > li:nth-child(2) {
+  display: none;
+}
+#toplevel_page_learn_press > ul > li:nth-child(3) {
+  display: none;
+}
+#toplevel_page_learn_press > ul > li:nth-child(6) {
+  display: none;
+}
+#toplevel_page_learn_press > ul > li:nth-child(7) {
+  display: none;
+}
+#toplevel_page_learn_press > ul > li:nth-child(8) {
+  display: none;
+}
+#toplevel_page_learn_press > ul > li:nth-child(9) {
+  display: none;
+}
+#toplevel_page_learn_press > ul > li:nth-child(10) {
+  display: none;
+}
+.quiz-question-options {
+  display: none;
+}
