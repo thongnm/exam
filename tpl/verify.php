@@ -1,7 +1,7 @@
 <div style="direction: ltr; text-align: left;">
-<h1>Hello {{name}},</h1>
-<p>Thanks for registering on our site, please <a href="{{link}}" target="_blank">click here to confirm your email address</a>.</p>
+<h1>Xin chào {{name}},</h1>
+<div>Chúc mừng bạn đã đăng ký tài khoản thành công.</div>
+<p>Vui lòng <a href="{{link}}" target="_blank">click vào link này để kích hoạt tài khoản của bạn</a>.</p>
 
-<p>If you are facing any problems with verifying your email address, try copying and pasting the below url to your browser</p>
-<a href="{{link}}" target="_blank">{{link}}</a>
+<p>Cám ơn.</p>
 </div>

@@ -99,6 +99,7 @@ class ExamHandler {
         $user_id = wp_create_user( $email, $password, $email );
         // lock user
         ExamHandler::lock_user($user_id);
+        $_SESSION['exam_registered'] = "Đăng ký thành công. Vui lòng kiểm tra email của bạn để kích hoạt tài khoản.";
 
       } else {
         $error = 'Email đã tồn tại.';
@@ -138,7 +139,7 @@ class ExamHandler {
     $link = add_query_arg( [
       'user_id' => $user->ID, 
       'verify_email' => $lock], 
-      get_bloginfo('url'). '/login');
+      get_bloginfo('url'). '/'. EXAM_LOGIN_SLUG);
     
     $email = (new WP_Mail)
 		    ->to( $user_email )

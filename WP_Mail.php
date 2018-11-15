@@ -290,7 +290,7 @@ Class WP_Mail
 	 * @return bool
 	 */
 	public function send(){
-		$this->beforeSend();
+    $this->beforeSend();
 		return wp_mail($this->to, $this->subject, $this->render(), $this->buildHeaders(), $this->attachments);
 	}
 }

@@ -77,11 +77,28 @@ class Exam {
     
     add_filter( 'query_vars', array( $this, 'add_query_vars_filter') );
 
+    add_filter( 'wp_mail_from_name', array( $this,'my_mail_from_name'));
+    add_filter( 'authenticate',  array( $this,'check_active_user'), 100, 2 );
+
     // ExamLearnPress::register_quizz_category();
     ExamLearnPress::custom_quiz_general_meta_box();
 
   }
-  
+
+  public function check_active_user( $user, $username ){
+    if(!isset($user->ID)) return;
+		$lock = get_user_meta( $user->ID, "verify-lock", true );
+
+		if( $lock && ! empty( $lock ) ) {
+      $_SESSION['exam_email_not_verify'] = "Tài khoản chưa được xác nhận.";
+			return new WP_Error();
+		}
+
+		return $user;
+	}
+  function my_mail_from_name( $name ) {
+      return EXAM_EMAIL_FROM_NAME;
+  }
   function exam_change_password() {
     ob_start();
     include 'change-password-form.php';
@@ -136,6 +153,23 @@ class Exam {
   function exam_login_form(){
     $action  = (isset($_GET['action']) ) ? $_GET['action'] : '';
     
+    // Verify email
+    $verify_email  = (isset($_GET['verify_email']) ) ? $_GET['verify_email'] : '';
+    $user_id  = (isset($_GET['user_id']) ) ? $_GET['user_id'] : '';
+    if($verify_email != '' && $user_id != '') {
+      $user_id = absint( $user_id );
+      if( $verify_email === get_user_meta( $user_id, 'verify-lock', true ) ) {
+        // Unlock user from loggin in
+        $user = get_user_by('id', $user_id);
+        delete_user_meta( $user_id, 'verify-lock' );
+        $_SESSION['exam_verified'] = "Xác nhận Email thành công.";
+        $url = get_bloginfo('url'). '/'. EXAM_LOGIN_SLUG;
+        echo '<script type="text/javascript">window.location = "' . $url . '"</script>';
+        exit();
+      }
+    }
+    
+
     ob_start();
     if ($action == EXAM_ACTION_REGISTER) {
       include 'register-form.php';
