@@ -97,6 +97,9 @@ class ExamHandler {
       $user_id = username_exists( $email );
       if ( !$user_id and email_exists($email) == false ) {
         $user_id = wp_create_user( $email, $password, $email );
+        // lock user
+        ExamHandler::lock_user($user_id);
+
       } else {
         $error = 'Email đã tồn tại.';
       }
@@ -111,7 +114,42 @@ class ExamHandler {
     $url = get_bloginfo('url') . '/'. EXAM_LOGIN_SLUG;
     wp_redirect($url);
   }
+  public static function lock_user( $user_id ){
+		$user = get_user_by('id', $user_id);
+    $hash = MD5($user->data->user_email. rand(0, 1000));
 
+    add_user_meta( $user_id, 'verify-lock', $hash );
+    
+    // Send email
+    ExamHandler::send_email($user, $hash);
+
+  }
+
+  public static function send_email( $user, $lock ){
+		if( ! $user || ! $user instanceof WP_User )
+			return;
+		if( ! $lock || empty( $lock ) )
+			return;
+
+		$user_email = $user->data->user_email;
+
+    $plugin_dir_path = plugin_dir_path( __FILE__ );
+    $template = $plugin_dir_path . 'tpl/verify.php';
+    $link = add_query_arg( [
+      'user_id' => $user->ID, 
+      'verify_email' => $lock], 
+      get_bloginfo('url'). '/login');
+    
+    $email = (new WP_Mail)
+		    ->to( $user_email )
+		    ->subject( 'Verify your email address' )
+		    ->template( $template, [
+		        'name' => $user->data->display_name,
+            'link' => $link
+		    ])
+		    ->send();
+  }
+  
   public static function change_password() {
     if ( !isset($_REQUEST) ) return;
     $old_password = $_POST['old_password'];

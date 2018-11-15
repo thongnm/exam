@@ -173,7 +173,7 @@ class ExamData {
             INNER JOIN $wpdb->posts p on ui.item_id = p.ID
             INNER JOIN $wpdb->learnpress_user_itemmeta uim ON ui.user_item_id = learnpress_user_item_id AND meta_key = '_exam_test_result'
             WHERE user_id = %d 
-            ORDER BY start_time
+            ORDER BY start_time desc
           ", $user_id );
         
     return  $wpdb->get_results( $sql );

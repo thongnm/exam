@@ -1,4 +1,6 @@
 <?php
+include "require_logged_in.php";
+
 global $wpdb;
 // Load styles 
 wp_enqueue_style('bootstrap-styles');

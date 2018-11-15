@@ -6,7 +6,7 @@ wp_enqueue_style('exam-styles');
 
 $login  = (isset($_GET['login']) ) ? $_GET['login'] : '';
 if ( $login == "failed" ) {
-  echo '<div class="text-danger">Email hoặc mật khẩu không hợp lệ.</div>';
+  echo '<div class="alert alert-danger">Email hoặc mật khẩu không hợp lệ.</div>';
 }
 $args = array(
   'redirect' => get_bloginfo('url'), 
@@ -20,6 +20,6 @@ $args = array(
 wp_login_form( $args );
 ?>
 <div>
-  <a href="<?php bloginfo('url')?>/login?action=<?php echo EXAM_ACTION_REGISTER?>"
+  <a style="text-decoration: false" href="<?php echo (get_bloginfo('url'). '/'. EXAM_LOGIN_SLUG)?>/?action=<?php echo EXAM_ACTION_REGISTER?>"
   >Đăng ký tài khoản mới</a>
 </div>

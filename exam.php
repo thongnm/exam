@@ -35,6 +35,7 @@ class Exam {
     require_once('exam-data.php');
     require_once('exam-handler.php');
     require_once('exam-learnpress.php');
+    require_once('WP_Mail.php');
   }
   /**
    * Init the plugin configuration
@@ -138,7 +139,15 @@ class Exam {
     ob_start();
     if ($action == EXAM_ACTION_REGISTER) {
       include 'register-form.php';
-    } else {
+    }
+    else if ($action == EXAM_ACTION_LOGOUT) {
+      wp_logout();
+      $url = get_bloginfo('url');
+      echo '<script type="text/javascript">window.location = "' . $url . '"</script>';
+      exit();
+     
+    }
+    else {
       include 'login-form.php';
     }
     return ob_get_clean();

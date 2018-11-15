@@ -1,8 +1,11 @@
 <?php
+include "require_logged_in.php";
+
 global $wpdb;
 // Load styles 
 wp_enqueue_style('bootstrap-styles');
 wp_enqueue_style('exam-styles');
+
 $error =  isset($_SESSION['exam_change_password_error'])? $_SESSION['exam_change_password_error']: '';
 $message =  isset($_SESSION['exam_change_password_message'])? $_SESSION['exam_change_password_message']: '';
 if($error != ''){

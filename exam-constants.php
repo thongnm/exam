@@ -5,7 +5,8 @@
 
 define( 'EXAM_ACTION_REGISTER_SUCCESS', 'register_sucess' );
 define( 'EXAM_ACTION_REGISTER', 'register' );
-define( 'EXAM_LOGIN_SLUG', 'login' );
+define( 'EXAM_ACTION_LOGOUT', 'logout' );
+define( 'EXAM_LOGIN_SLUG', 'account' );
 
 define( 'EXAM_PRATICE_PAGE_SLUG', 'practice' );
 define( 'EXAM_TEST_PAGE_SLUG', 'test' );
