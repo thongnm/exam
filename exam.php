@@ -81,10 +81,71 @@ class Exam {
     add_filter( 'wp_mail_from_name', array( $this,'my_mail_from_name'));
     add_filter( 'authenticate',  array( $this,'check_active_user'), 100, 2 );
     
+    // Custom user fields
+    add_filter( 'manage_users_columns', array( $this,'add_user_columns') );
+    add_filter( 'manage_users_custom_column', array( $this,'add_user_column_data'), 10, 3 );
+    add_action( 'edit_user_profile', array( $this,'exam_show_extra_profile_fields' ));
+    add_action( 'edit_user_profile_update', array( $this,'exam_update_profile_fields') );
+    // After logged in
+    add_action('wp_login', array( $this,'exam_after_login'), 10, 2);
+
     // ExamLearnPress::register_quizz_category();
     ExamLearnPress::custom_quiz_general_meta_box();
 
   }
+  function exam_after_login( $user_login, $user ) {
+    $user_id = $user->ID;
+    $quota = get_user_meta( $user_id, EXAM_KEY_QUOTA, True);
+    if(intval($quota) == 0) {
+      // Add free quota
+      $last_added = get_user_meta( $user_id, EXAM_KEY_QUOTA_FREE, True);
+      $can_add = False;
+      if($last_added == "") {
+        $can_add = True;
+      } else {
+        $diff = date_diff(date_create(current_time('mysql')), date_create($last_added));
+        if($diff->days >= 1) {
+          $can_add = True;
+        }
+      } 
+
+      if($can_add) {
+        update_user_meta( $user_id, EXAM_KEY_QUOTA_FREE, current_time( 'mysql' ));
+        update_user_meta( $user_id, EXAM_KEY_QUOTA, 1);
+      }
+    }
+  }
+
+  function exam_update_profile_fields( $user_id ) {
+    if ( ! current_user_can( 'edit_user', $user_id ) ) {
+      return false;
+    }
+    if ( intval( $_POST[EXAM_KEY_QUOTA] ) >= 0 ) {
+      update_user_meta( $user_id, EXAM_KEY_QUOTA, $_POST[EXAM_KEY_QUOTA]);
+    }
+  }
+  function exam_show_extra_profile_fields( $user ) {
+    include "forms/admin-user-info.php";
+  }
+
+  function add_user_columns($column) {
+    $column[EXAM_KEY_QUOTA] = 'Số lần thi còn lại';
+    return $column;
+  }
+
+  //add the data
+  function add_user_column_data( $val, $column_name, $user_id ) {
+    $user = get_userdata($user_id);
+
+    switch ($column_name) {
+        case EXAM_KEY_QUOTA :
+            return $user->{EXAM_KEY_QUOTA};
+            break;
+        default:
+    }
+    return;
+  }
+
   function admin_style() {
     wp_enqueue_style('admin-styles',plugins_url('assets/exam-admin-styles.css', __FILE__));
   }
@@ -140,6 +201,7 @@ class Exam {
   }
   
   function my_front_end_login_fail( $username ) {
+    if(!isset($_SERVER['HTTP_REFERER'])) return;
     $referrer = $_SERVER['HTTP_REFERER'];  // where did the post submission come from?
     // if there's a valid referrer, and it's not the default log-in screen
     if ( !empty($referrer) && !strstr($referrer,'wp-login') && !strstr($referrer,'wp-admin') ) {
@@ -231,7 +293,15 @@ class Exam {
   }
   function exam_test_form(){
     ob_start();
-    include 'forms/test-form.php';
+    if(is_user_logged_in() && !ExamData::can_take_exam(get_current_user_id()) ) {
+      // redirect to exceeded quota page
+      $url = get_bloginfo('url') . '/' . EXAM_PAGE_EXCEEDED_QUOTA;
+      echo '<script type="text/javascript">window.location = "' . $url . '"</script>';
+      exit();
+
+    } else {
+      include 'forms/test-form.php';
+    }
     return ob_get_clean();
   }
 

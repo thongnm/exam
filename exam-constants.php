@@ -9,6 +9,10 @@ define( 'EXAM_ACTION_LOGOUT', 'logout' );
 define( 'EXAM_LOGIN_SLUG', 'account' );
 define( 'EXAM_EMAIL_FROM_NAME', 'LuyenThiChungChiXayDung' );
 
+define( 'EXAM_PAGE_EXCEEDED_QUOTA', 'exceeded-quota' );
+define( 'EXAM_KEY_QUOTA', 'exam_quota' );
+define( 'EXAM_KEY_QUOTA_FREE', 'exam_quota_free' );
+
 define( 'EXAM_PRATICE_PAGE_SLUG', 'practice' );
 define( 'EXAM_TEST_PAGE_SLUG', 'test' );
 define( 'EXAM_TEST_DURATION', 30 * 60 ); // 30 mins

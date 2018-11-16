@@ -178,4 +178,13 @@ class ExamData {
         
     return  $wpdb->get_results( $sql );
   }
+  public static function can_take_exam($user_id) {
+    // Get quota
+    $quota = get_user_meta($user_id, EXAM_KEY_QUOTA, True);    
+    if (intval($quota) > 0) {
+      update_user_meta($user_id, EXAM_KEY_QUOTA, intval($quota) - 1);
+      return true;
+    }
+    return false;
+  }
 }

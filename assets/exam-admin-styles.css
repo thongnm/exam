@@ -22,3 +22,21 @@
 .quiz-question-options {
   display: none;
 }
+
+/* User personal options */
+#your-profile > h2:nth-child(5) {
+  display: none;
+}
+#your-profile > table:nth-child(6)
+{
+  display: none;
+}
+/* About the user */
+#your-profile > h2:nth-child(11) {
+  display: none;
+}
+#your-profile > table:nth-child(12){
+  display: none;
+}
+
+
