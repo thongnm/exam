@@ -35,7 +35,7 @@ class Exam {
     require_once('exam-data.php');
     require_once('exam-handler.php');
     require_once('exam-learnpress.php');
-    require_once('WP_Mail.php');
+    require_once('vendors/WP_Mail.php');
   }
   /**
    * Init the plugin configuration
@@ -86,7 +86,7 @@ class Exam {
 
   }
   function admin_style() {
-    wp_enqueue_style('admin-styles',plugins_url('exam-admin-styles.css', __FILE__));
+    wp_enqueue_style('admin-styles',plugins_url('assets/exam-admin-styles.css', __FILE__));
   }
   public function check_active_user( $user, $username ){
     if(!isset($user->ID)) return;
@@ -104,12 +104,12 @@ class Exam {
   }
   function exam_change_password() {
     ob_start();
-    include 'change-password-form.php';
+    include 'forms/change-password-form.php';
     return ob_get_clean();
   }
   function exam_user_tests() {
     ob_start();
-    include 'user-tests-form.php';
+    include 'forms/user-tests-form.php';
     return ob_get_clean();
   }
   function remove_admin_bar() {
@@ -130,8 +130,8 @@ class Exam {
 
   function exam_enqueue_scripts() {
     // Register styles
-    wp_register_style('exam-styles', plugins_url('exam-styles.css', __FILE__) );
-    wp_enqueue_script('exam-scripts', plugins_url('exam-scripts.js', __FILE__), array(), false, $in_footer = true);
+    wp_register_style('exam-styles', plugins_url('assets/exam-styles.css', __FILE__) );
+    wp_enqueue_script('exam-scripts', plugins_url('assets/exam-scripts.js', __FILE__), array(), false, $in_footer = true);
     
     // Bootstrap
     wp_register_style('bootstrap-styles', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' );
@@ -175,7 +175,7 @@ class Exam {
 
     ob_start();
     if ($action == EXAM_ACTION_REGISTER) {
-      include 'register-form.php';
+      include 'forms/register-form.php';
     }
     else if ($action == EXAM_ACTION_LOGOUT) {
       wp_logout();
@@ -185,7 +185,7 @@ class Exam {
      
     }
     else {
-      include 'login-form.php';
+      include 'forms/login-form.php';
     }
     return ob_get_clean();
   }
@@ -193,26 +193,26 @@ class Exam {
   function exam_quizzes_all(){
     $quizzes = ExamData::get_list_quizzes();
     ob_start();
-    include 'quizzes-form.php';
+    include 'forms/quizzes-form.php';
     return ob_get_clean();
   }
   function exam_quizzes_law(){
     $quizzes = ExamData::get_list_quizzes_law();
     ob_start();
-    include 'quizzes-form.php';
+    include 'forms/quizzes-form.php';
     return ob_get_clean();
   }
   function exam_quizzes_specific(){
     $quizzes = ExamData::get_list_tests();
     ob_start();
-    include 'quizzes-form.php';
+    include 'forms/quizzes-form.php';
     return ob_get_clean();
   }
   function exam_tests_form(){
     $quizzes = ExamData::get_list_tests();
     $url = EXAM_TEST_PAGE_SLUG;
     ob_start();
-    include 'quizzes-form.php';
+    include 'forms/quizzes-form.php';
     return ob_get_clean();
   }
   function exam_tests_form_renew(){
@@ -220,18 +220,18 @@ class Exam {
     $url = EXAM_TEST_PAGE_SLUG;
     $type = EXAM_TYPE_RENEW;
     ob_start();
-    include 'quizzes-form.php';
+    include 'forms/quizzes-form.php';
     return ob_get_clean();
   }
 
   function exam_practice_form(){
     ob_start();
-    include 'practice-form.php';
+    include 'forms/practice-form.php';
     return ob_get_clean();
   }
   function exam_test_form(){
     ob_start();
-    include 'test-form.php';
+    include 'forms/test-form.php';
     return ob_get_clean();
   }
 
