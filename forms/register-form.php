@@ -1,8 +1,5 @@
 <?php
 global $wpdb;
-// Load styles 
-wp_enqueue_style('bootstrap-styles');
-wp_enqueue_style('exam-styles');
 $error =  isset($_SESSION['exam_register_error'])? $_SESSION['exam_register_error']: '';
 if($error != ''){
   echo "<div class='alert alert-danger'>". $error ."</div>";

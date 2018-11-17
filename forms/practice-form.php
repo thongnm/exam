@@ -1,7 +1,5 @@
 <?php
 global $wpdb;
-// Load styles 
-wp_enqueue_style('exam-styles');
 
 $quiz_id = $_GET['id'];
 

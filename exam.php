@@ -191,11 +191,11 @@ class Exam {
 
   function exam_enqueue_scripts() {
     // Register styles
-    wp_register_style('exam-styles', plugins_url('assets/exam-styles.css', __FILE__) );
+    wp_enqueue_style('exam-styles', plugins_url('assets/exam-styles.css', __FILE__) );
     wp_enqueue_script('exam-scripts', plugins_url('assets/exam-scripts.js', __FILE__), array(), false, $in_footer = true);
     
     // Bootstrap
-    wp_register_style('bootstrap-styles', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' );
+    wp_enqueue_style('bootstrap-styles', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' );
     wp_enqueue_script('bootstrap.min', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', array(), false, $in_footer = true);
    
   }
