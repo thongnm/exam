@@ -94,7 +94,16 @@ class ExamLearnPress {
     $meta_box = array(
       'id'     => 'question_settings',
       'title'  => __( 'Settings', 'learnpress' ),
-      'fields' => array()
+      'pages'  => array( LP_QUESTION_CPT ),
+      'fields' => array(
+        array(
+          'name'         => 'Đề thi',
+          'desc'         => 'Gán câu hỏi cho đề thi này.',
+          'id'           => '_exam_question_quizz',
+          'type'         => 'post',
+          'post_type'    => 'lp_quiz'
+        )
+      )
     );
     return $meta_box;
   }

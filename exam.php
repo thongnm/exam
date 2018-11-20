@@ -92,6 +92,40 @@ class Exam {
     // ExamLearnPress::register_quizz_category();
     ExamLearnPress::custom_quiz_general_meta_box();
 
+    // Save question quiz
+    add_action( 'save_post', array( $this,'exam_save_post'), 10, 3 );
+
+  }
+  function exam_save_post( $post_id, $post, $update ) {
+    global $wpdb;
+    $post_type = get_post_type($post_id);
+
+    // If this isn't a 'lp_question' post, don't update it.
+    if ( LP_QUESTION_CPT != $post_type ) return;
+    if ( isset( $_POST['_exam_question_quizz'] ) ) {
+      $quizz_id = intval($_POST['_exam_question_quizz']);
+      $query = $wpdb->prepare( "
+          SELECT max(question_order) + 1 as ordering
+          FROM {$wpdb->prefix}learnpress_quiz_questions
+          WHERE quiz_id = %d
+        ", $quizz_id );
+          if ( ! $order = $wpdb->get_var( $query ) ) {
+            $order = 1;
+          }
+      $delete = $wpdb->delete(
+        $wpdb->learnpress_quiz_questions,
+        array( 'question_id' => $post_id )
+      );
+      $inserted = $wpdb->insert(
+        $wpdb->prefix . 'learnpress_quiz_questions',
+        array(
+          'quiz_id'        => $quizz_id,
+          'question_id'    => $post_id,
+          'question_order' => $order
+        ),
+        array( '%d', '%d', '%d' )
+      );
+    }
   }
   function exam_after_login( $user_login, $user ) {
     $user_id = $user->ID;
