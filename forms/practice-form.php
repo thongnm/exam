@@ -27,6 +27,8 @@ $quizz_title = get_post($quiz_id)->post_title;
         <?php echo $post_title ?>
        </div>
       <?php 
+      $answer_index_text = ['a', 'b', 'c', 'd', 'e', 'f'];
+      $answer_index = 0;
       foreach ( $answers as $k1 => $v1 ) {
         if ($v1->question_id != $question_id) continue;
         $v1 = (array) $v1;
@@ -45,7 +47,9 @@ $quizz_title = get_post($quiz_id)->post_title;
         ?>
       <div class="exam-answers-container">
         <div class="radio">
-          <label onclick="examShowAnswer('<?php echo $question_id?>')" id="<?php echo $option_id?>" ><input type="radio" name="optradio_<?php echo $v->ID?>" >  <?php echo $v1['text'] ?></label>
+          <label onclick="examShowAnswer('<?php echo $question_id?>')" id="<?php echo $option_id?>" ><input type="radio" name="optradio_<?php echo $v->ID?>" >  
+            <?php echo  $answer_index_text[$answer_index++]. '.  ' . $v1['text'] ?>
+          </label>
           <br>
         </div>
       </div>

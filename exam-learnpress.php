@@ -36,7 +36,14 @@ class ExamLearnPress {
   public static function custom_quiz_general_meta_box(){
     add_filter('learn_press_quiz_general_meta_box','ExamLearnPress::learn_press_quiz_general_meta_box');
     add_filter('learn_press_question_meta_box_args','ExamLearnPress::learn_press_question_meta_box_args');
+   
+    // add_filter('learn-press/default-add-new-question-type','ExamLearnPress::learn_press_default_add_new_question_type');
+
   }
+  public static function learn_press_default_add_new_question_type($type){
+    // return 'single_choice';
+  }
+
   /**
    * Customize Quiz General Setting box
    *

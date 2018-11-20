@@ -27,7 +27,7 @@ class ExamData {
     $sql = $wpdb->prepare( "
             SELECT * FROM $wpdb->learnpress_question_answers 
             WHERE question_id = %d 
-            ORDER BY rand()
+            ORDER BY answer_order
           ", $question_id );
         
     $question_answers = $wpdb->get_results( $sql );
@@ -40,7 +40,7 @@ class ExamData {
     $sql = $wpdb->prepare( "
             SELECT * FROM $wpdb->learnpress_question_answers 
             WHERE question_id IN (" . join( ',', $format ) . ")
-            ORDER BY rand()
+            ORDER BY answer_order
           ", $question_ids );
         
     $question_answers = $wpdb->get_results( $sql );
