@@ -3,7 +3,7 @@ global $wpdb;
 
 $quiz_id = $_GET['id'];
 
-$questions = ExamData::get_quizz_questions($quiz_id);
+$questions = ExamData::get_quizz_questions_practice($quiz_id);
 foreach ( $questions as $k => $v ) {
   $ids[] = $v->ID;
 }

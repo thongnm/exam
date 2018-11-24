@@ -6,6 +6,20 @@ defined( 'ABSPATH' ) || exit();
 
 class ExamData {
   
+  public static function get_quizz_questions_practice($quiz_id) {
+    global $wpdb;
+    $query = $wpdb->prepare( "
+      SELECT p.*, qq.quiz_id, qq.question_order AS `order`
+      FROM {$wpdb->posts} p 
+      INNER JOIN {$wpdb->prefix}learnpress_quiz_questions qq ON p.ID = qq.question_id
+      WHERE qq.quiz_id = %d
+      AND p.post_status = %s
+      ",$quiz_id, 'publish' );
+
+    $results = $wpdb->get_results( $query );
+    return $results;
+  }
+
   public static function get_quizz_questions($quiz_id, $limit = 1000) {
     global $wpdb;
     $query = $wpdb->prepare( "
