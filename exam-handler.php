@@ -20,7 +20,18 @@ class ExamHandler {
       // Get question law meta
       $meta_data_law = ExamLearnPress::get_user_items_meta($ui_id, META_KEY_EXAM_TEST_QUESTIONS_LAW);
       $questions_law = maybe_unserialize($meta_data_law->meta_value);
+      
+      $meta_data_law_general = ExamLearnPress::get_user_items_meta($ui_id, META_KEY_EXAM_TEST_QUESTIONS_LAW_GENERAL);
+      $questions_law_general = maybe_unserialize($meta_data_law_general->meta_value);
+      
+      $meta_data_law_specific = ExamLearnPress::get_user_items_meta($ui_id, META_KEY_EXAM_TEST_QUESTIONS_LAW_SPECIFIC);
+      $questions_law_specific = maybe_unserialize($meta_data_law_specific->meta_value);
+      
       $law_correct = 0;
+      
+      $law_correct_general = 0;
+      $law_correct_specific = 0;
+      
       $correct_count = 0;
       $incorrect_count = 0;
       $unanswer_count = 0;
@@ -36,6 +47,14 @@ class ExamHandler {
               if(in_array($question_id, $questions_law)) {
                 $law_correct++;
               }
+
+              if(in_array($question_id, $questions_law_general)) {
+                $law_correct_general++;
+              }
+              if(in_array($question_id, $questions_law_specific)) {
+                $law_correct_specific++;
+              }
+
             } else {
               $incorrect_count++;
             }
@@ -61,12 +80,17 @@ class ExamHandler {
       // Return values
       $obj = new stdClass;
       $obj->law_correct = $law_correct;
+
+      $obj->law_correct_general = $law_correct_general;
+      $obj->law_correct_specific = $law_correct_specific;
+
       $obj->correct_count = $correct_count;
       $obj->incorrect_count = $incorrect_count;
       $obj->unanswer_count = $unanswer_count;
       $obj->score = $score;
       $obj->is_passed = $is_passed;
       $obj->end_time = current_time( 'mysql' );
+      $obj->test_type = $test_type;
       
       // Save test data
       ExamLearnPress::add_user_items_meta($ui_id, $obj, META_KEY_EXAM_TEST_RESULT);

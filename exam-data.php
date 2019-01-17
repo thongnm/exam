@@ -162,6 +162,10 @@ class ExamData {
     $obj = new stdClass;
     $obj->questions_specific = $questions;
     $obj->questions_law = $questions_law ;
+    
+    $obj->general_law_questions = $general_law_questions ;
+    $obj->specific_law_questions = $specific_law_questions ;
+
     return $obj;
   }
   public static function get_questions_for_test_renew($quiz_id) {
@@ -177,6 +181,8 @@ class ExamData {
     $obj = new stdClass;
     $obj->questions_specific = array();
     $obj->questions_law = $questions_law ;
+    $obj->general_law_questions = $general_law_questions ;
+    $obj->specific_law_questions = $specific_law_questions ;
     return $obj;
   }
   public static function get_user_tests($user_id) {

@@ -2,12 +2,20 @@
 include "require_logged_in.php";
 
 global $wpdb;
+global $current_user; 
+wp_get_current_user();
 
 if(!isset($_GET['id'])) {
   return;
 }
 $quiz_id = $_GET['id'];
 $type = isset($_GET['type']) ? $_GET['type'] : '';
+
+$genral_law_quiz = ExamData::get_general_law_quiz();
+$base_quiz_id = get_post_meta($quiz_id,'_exam_base_quizz', true);
+
+$general_law_title = get_post($genral_law_quiz)->post_title;   
+$specific_law_title = get_post($base_quiz_id)->post_title;   
 
 if(!$quiz_id) return;
 
@@ -17,14 +25,28 @@ if ($type == EXAM_TYPE_RENEW) {
   $result = ExamData::get_questions_for_test($quiz_id);
 }
 $questions_law = $result->questions_law;
+
+$general_law_questions = $result->general_law_questions;
+$specific_law_questions = $result->specific_law_questions;
+
 $questions_specific = $result->questions_specific;
 
 foreach ( $questions_law as $k => $v ) {
   $question_law_ids[] = $v->ID;
 }
 
+foreach ( $general_law_questions as $k => $v ) {
+  $general_law_questions_ids[] = $v->ID;
+}
+foreach ( $specific_law_questions as $k => $v ) {
+  $specific_law_questions_ids[] = $v->ID;
+}
+
 $ui_id = ExamLearnPress::add_user_items($quiz_id);
 ExamLearnPress::add_user_items_meta($ui_id, $question_law_ids, META_KEY_EXAM_TEST_QUESTIONS_LAW);
+
+ExamLearnPress::add_user_items_meta($ui_id, $general_law_questions_ids, META_KEY_EXAM_TEST_QUESTIONS_LAW_GENERAL);
+ExamLearnPress::add_user_items_meta($ui_id, $specific_law_questions_ids, META_KEY_EXAM_TEST_QUESTIONS_LAW_SPECIFIC);
 
 $questions = array_merge($questions_law, $questions_specific);
 shuffle($questions);
@@ -45,39 +67,157 @@ if ($type == EXAM_TYPE_RENEW) {
 
 ?>
 <div id="exam_test_page">
-<div class="exam-quizz-title">Trắc nghiệm <?php  echo $quizz_title ?></div>
-<div id="exam_result_container">
-  <table class="table">
-    <tr class="success">
-      <td>Kết quả: </td>
-      <td><div id="exam_result_is_passed"></div></td>
-    </tr>
-    <tr>
-      <td>Điểm: </td>
-      <td> <div id="exam_result_score"></div></div></td>
-    </tr>
-    <tr>
-      <td>Số câu đúng: </td>
-      <td> <div id="exam_result_correct_count"></div></td>
-    </tr>
-    <tr>
-      <td>Số câu sai: </td>
-      <td><div id="exam_result_incorrect_count"></div></td>
-    </tr>
-    <tr>
-      <td>Số câu chưa trả lời: </td>
-      <td><div id="exam_result_unanswer_count"></div></td>
-    </tr>
-    <tr>
-      <td>Chi tiết<title></title>: </td>
-      <td>
-        <button id="exam_review_result" onclick="showReview()" type="button" class="btn btn-primary">
-            Xem chi tiết
-        </button>
-      </td>
-    </tr>
-  </table>
-</div>
+  <div class="exam-quizz-title">Trắc nghiệm <?php  echo $quizz_title ?></div>
+  <style>
+  #exam_result_container div {
+    margin-top: 3px;
+  }
+  </style>
+  <div id="exam_result_container" style="display:none" >
+    <div style="border-width:2px;border-style:solid;">
+      <div class="row">
+        <div class="col-xs-6 text-center">
+            <span style="font-weight:bold">BỘ XÂY DỰNG</span>
+        </div>
+        <div class="col-xs-6 text-center">
+          <span style="font-weight:bold;color:#2196f3">HỆ THỐNG SÁT HẠCH TRỰC TUYẾN</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6 text-center">
+            <span style="font-weight:bold">CỤC QUẢN LÝ HOẠT ĐỘNG XÂY DỰNG</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 text-center">
+            <span style="color:red;font-size:12pt;font-weight:bold">
+            PHIẾU KẾT QUẢ SÁT HẠCH
+            </span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-3"></div>
+        <div class="col-xs-6 text-center">
+            <hr/>
+        </div>
+        <div class="col-xs-3"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-2"></div>
+        <div class="col-xs-8 text-center">
+          <div style="font-weight:bold">
+          BÀI SÁT HẠCH: <span id="test_title"><?php  echo $quizz_title ?></span>
+          </div>
+            
+        </div>
+        <div class="col-xs-2"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-2"></div>
+        <div class="col-xs-4">
+          Tài khoản: <span id="test_account" style="font-weight:bold"><?php echo $current_user->user_login?></span>
+        </div>
+        <div class="col-xs-4">
+          CMND: <span id="test_id" style="font-weight:bold"></span>
+        </div>
+        <div class="col-xs-2"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-2"></div>
+        <div class="col-xs-4">
+          Họ và tên: <span id="test_name" style="font-weight:bold"></span>
+        </div>
+        <div class="col-xs-4">
+          Ngày sinh: <span id="test_dob" style="font-weight:bold"></span>
+        </div>
+        <div class="col-xs-2"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-2"></div>
+        <div class="col-xs-4">
+          Địa chỉ thường trú: <span id="test_address" style="font-weight:bold"></span>
+        </div>
+        <div class="col-xs-4">
+        </div>
+        <div class="col-xs-2"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-2"></div>
+        <div class="col-xs-4">
+          Đơn vị: <span id="test_company" style="font-weight:bold"></span>
+        </div>
+        <div class="col-xs-4">
+        </div>
+        <div class="col-xs-2"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-2"></div>
+        <div class="col-xs-4">
+          Ngày thi: <span id="test_date" style="font-weight:bold"><?php echo date('d/m/Y') ?></span>
+        </div>
+        <div class="col-xs-4">
+        </div>
+        <div class="col-xs-2"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-10" style="border-width:3px;border-style:double;">
+          <span>
+            Diểm thi: <span id="test_score" style="font-weight:bold">100</span>
+          </span>
+          <span style="float:right" >
+            Kết quả: <span id="test_result" style="font-weight:bold">Dat</span>
+          </span>
+        </div>
+        <div class="col-xs-1"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-10">
+        <hr/>
+        </div>
+        <div class="col-xs-1"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-5">
+          <div style="font-weight:bold">Trong đó:</div>
+          <div id="general_law_title"><?php echo $general_law_title?></div>
+          <div id="specific_law_title"><?php echo $specific_law_title?></div>
+          <div id="quiz_title"><?php echo $quizz_title?></div>
+        </div>
+        <div class="col-xs-5 text-right">
+          <div style="font-weight:bold">Kết quả</div>
+          <div id="general_law_count"></div>
+          <div id="specific_law_count"></div>
+          <div id="quiz_count"></div>
+        </div>
+        <div class="col-xs-1"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-5 text-center" style="font-weight:bold">
+          CÁN BỘ SÁT HẠCH
+        </div>
+        <div class="col-xs-5 text-center" style="font-weight:bold">
+          THÍ SINH
+        </div>
+        <div class="col-xs-1"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <br>
+          <br>
+        </div>
+      </div>
+    </div>
+    <div>
+      <button id="exam_review_result" onclick="showReview()" type="button" class="btn btn-primary">
+        Xem chi tiết
+      </button>  
+    </div>
+  </div>
+
 <div id="exam_test_container">
   <div class="exam-question-header">
     <div class="exam-quizz-timer">Thời gian: <span id="exam_timer"></span></div>
@@ -255,13 +395,23 @@ function submitTest() {
   
 }
 function showTestResult(data) {
+  console.log('data', data);
   $('#exam_test_container').hide();
   $('#exam_result_container').show();
-  $('#exam_result_is_passed').html((data.is_passed)? 'Đạt': 'Không đạt');
-  $('#exam_result_score').html(data.score);
-  $('#exam_result_correct_count').html(data.correct_count);
-  $('#exam_result_incorrect_count').html(data.incorrect_count);
-  $('#exam_result_unanswer_count').html(data.unanswer_count);
+  $('#test_result').html((data.is_passed)? 'Đạt': 'Không đạt');
+  $('#test_score').html(data.score);
+  if(data.test_type === 'renew') {
+    $('#general_law_count').html(`(${data.law_correct_general}/5)`);
+    $('#specific_law_count').html(`(${data.law_correct_general}/5)`);
+    
+    $('#quiz_title').hide();
+    $('#quiz_count').hide();
+
+  } else {
+    $('#general_law_count').html(`(${data.law_correct_general}/2)`);
+    $('#specific_law_count').html(`(${data.law_correct_general}/3)`);
+    $('#quiz_count').html(`(${data.correct_count - data.law_correct}/25)`);
+  }
 
   window.questions_with_answers = data.questions_with_answers;
 }

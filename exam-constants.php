@@ -26,6 +26,10 @@ define( 'EXAM_GENERAL_LAW_LIMIT', 2 );
 define( 'EXAM_SPECIFIC_LAW_LIMIT', 3 );
 define( 'SCORE_PER_QUESTION', 4 );
 define( 'META_KEY_EXAM_TEST_QUESTIONS_LAW', '_exam_test_questions_law' );
+
+define( 'META_KEY_EXAM_TEST_QUESTIONS_LAW_GENERAL', '_exam_test_questions_law_general' );
+define( 'META_KEY_EXAM_TEST_QUESTIONS_LAW_SPECIFIC', '_exam_test_questions_law_specific' );
+
 define( 'META_KEY_EXAM_TEST_QUESTIONS', '_exam_test_questions' );
 define( 'META_KEY_EXAM_TEST_ANSWERS', '_exam_test_answers' );
 define( 'META_KEY_EXAM_TEST_RESULT', '_exam_test_result' );
