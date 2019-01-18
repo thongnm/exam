@@ -1,6 +1,9 @@
 <?php
 include "require_logged_in.php";
 
+// Load styles 
+wp_enqueue_style('exam-styles');
+
 global $wpdb;
 
 $error =  isset($_SESSION['exam_change_password_error'])? $_SESSION['exam_change_password_error']: '';

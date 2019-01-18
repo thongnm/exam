@@ -1,4 +1,7 @@
 <?php
+// Load styles 
+wp_enqueue_style('exam-styles');
+
 global $wpdb;
 
 $verified =  isset($_SESSION['exam_verified'])? $_SESSION['exam_verified']: '';

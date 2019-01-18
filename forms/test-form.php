@@ -58,6 +58,8 @@ $answers = ExamData::get_all_answers($ids);
 
 $quizz_title = get_post($quiz_id)->post_title;
 
+$quizz_title = ExamData::get_quiz_title_for_test($quizz_title);
+
 $start_time = current_time( 'mysql' );
 
 $duration = EXAM_TEST_DURATION;
@@ -163,7 +165,7 @@ if ($type == EXAM_TYPE_RENEW) {
         <div class="col-xs-1"></div>
         <div class="col-xs-10" style="border-width:3px;border-style:double;">
           <span>
-            Diểm thi: <span id="test_score" style="font-weight:bold">100</span>
+            Điểm thi: <span id="test_score" style="font-weight:bold">100</span>
           </span>
           <span style="float:right" >
             Kết quả: <span id="test_result" style="font-weight:bold">Dat</span>
@@ -402,14 +404,14 @@ function showTestResult(data) {
   $('#test_score').html(data.score);
   if(data.test_type === 'renew') {
     $('#general_law_count').html(`(${data.law_correct_general}/5)`);
-    $('#specific_law_count').html(`(${data.law_correct_general}/5)`);
+    $('#specific_law_count').html(`(${data.law_correct_specific}/5)`);
     
     $('#quiz_title').hide();
     $('#quiz_count').hide();
 
   } else {
     $('#general_law_count').html(`(${data.law_correct_general}/2)`);
-    $('#specific_law_count').html(`(${data.law_correct_general}/3)`);
+    $('#specific_law_count').html(`(${data.law_correct_specific}/3)`);
     $('#quiz_count').html(`(${data.correct_count - data.law_correct}/25)`);
   }
 
