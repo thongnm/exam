@@ -2,6 +2,13 @@
 global $wpdb;
 
 $quiz_id = $_GET['id'];
+$meta = get_post_meta($quiz_id);
+$custom_title = true;
+if($meta['_exam_is_general_law'][0] == 'yes' 
+  || $meta['_exam_is_specific_law'][0] == 'yes') {
+  $custom_title = false;
+}
+
 
 $questions = ExamData::get_quizz_questions_practice($quiz_id);
 foreach ( $questions as $k => $v ) {
@@ -10,6 +17,11 @@ foreach ( $questions as $k => $v ) {
 $answers = ExamData::get_all_answers($ids);
 
 $quizz_title = get_post($quiz_id)->post_title;
+
+if($custom_title) {
+  $quizz_title = ExamData::get_custom_quiz_title($quizz_title);
+}
+
 ?>
 <div>
   <h1>Luyện thi chứng chỉ hành nghề xây dựng: <?php  echo $quizz_title ?></h1>

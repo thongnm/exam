@@ -207,13 +207,8 @@ class ExamData {
     }
     return false;
   }
-  public static function get_quiz_title_for_test($title) {
-    $result =  str_replace("Kiến thức chuyên môn về lĩnh vực ", "", $title);
-    $result =  str_replace("Kiến thức chuyên môn Lĩnh vực ", "", $result);
-    $result =  str_replace("Kiến thức chuyến môn về Lĩnh vực ", "", $result);
-    $result =  str_replace("Kiến thức chuyên môn về Lĩnh vực ", "", $result);
-
-
+  public static function get_custom_quiz_title($title) {
+    $result =  "Kiến thức chuyên môn về ". $title;
     return $result;
   }
 }

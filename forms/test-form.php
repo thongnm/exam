@@ -58,8 +58,6 @@ $answers = ExamData::get_all_answers($ids);
 
 $quizz_title = get_post($quiz_id)->post_title;
 
-$quizz_title = ExamData::get_quiz_title_for_test($quizz_title);
-
 $start_time = current_time( 'mysql' );
 
 $duration = EXAM_TEST_DURATION;

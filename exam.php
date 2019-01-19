@@ -301,6 +301,7 @@ class Exam {
   }
   function exam_quizzes_specific(){
     $quizzes = ExamData::get_list_tests();
+    $custom_title = true;
     ob_start();
     include 'forms/quizzes-form.php';
     return ob_get_clean();

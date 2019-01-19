@@ -10,7 +10,7 @@ if(!isset($url)) {
       $quizzes->the_post();
       ?>
         <a href="<?php bloginfo('url')?>/<?php echo $url ?>/?id=<?php the_ID(); ?><?php echo isset($type)? '&type='. $type : '' ?>  " class="list-group-item">
-          <?php the_title( '<div>', '</div>' ); ?>
+          <div><?php echo isset($custom_title)? ExamData::get_custom_quiz_title(get_the_title()) : get_the_title() ?></div>
         </a>
       <?php
     }
