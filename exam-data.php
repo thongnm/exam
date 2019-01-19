@@ -155,7 +155,7 @@ class ExamData {
     $specific_law_questions = ExamData::get_quizz_questions($base_quiz_id, 3);
     
     // Get remaining questions
-    $questions = ExamData::get_quizz_questions($quiz_id, 25);
+    $questions = ExamData::get_quizz_questions($quiz_id, 20);
     
     $questions_law = array_merge($general_law_questions, $specific_law_questions);
     

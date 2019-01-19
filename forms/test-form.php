@@ -410,7 +410,7 @@ function showTestResult(data) {
   } else {
     $('#general_law_count').html(`(${data.law_correct_general}/2)`);
     $('#specific_law_count').html(`(${data.law_correct_specific}/3)`);
-    $('#quiz_count').html(`(${data.correct_count - data.law_correct}/25)`);
+    $('#quiz_count').html(`(${data.correct_count - data.law_correct}/20)`);
   }
 
   window.questions_with_answers = data.questions_with_answers;
