@@ -229,7 +229,7 @@ class Exam {
     wp_enqueue_script('bootstrap.min', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', array(), false, $in_footer = true);
     
     // Register styles
-    wp_enqueue_style('exam-styles', plugins_url('assets/exam-styles.css', __FILE__) );
+    wp_enqueue_style('exam-styles', plugins_url('assets/exam-styles.css?v='.time(), __FILE__) );
     wp_enqueue_script('exam-scripts', plugins_url('assets/exam-scripts.js', __FILE__), array(), false, $in_footer = true);
    
   
